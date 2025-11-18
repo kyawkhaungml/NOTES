@@ -62,5 +62,12 @@ CREATE TABLE employee (
         ON DELETE SET NULL                           -- what happens when dept is deleted
 );
 
+-- Try inserting valid and invalid rows to see the constraints work
+INSERT INTO department (dept_name) VALUES ('Engineering');
 
+INSERT INTO employee (first_name, last_name, email, salary, dept_id)
+VALUES ('Kyle', 'Lwin', 'kyle@example.com', 80000, 1);  -- should succeed
+
+INSERT INTO employee (first_name, last_name, email, salary, dept_id)
+VALUES ('Kyle', 'Lwin', 'kyle@example.com', -5, 1);     -- should fail (negative salary)
 
