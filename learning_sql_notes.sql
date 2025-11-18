@@ -71,3 +71,10 @@ VALUES ('Kyle', 'Lwin', 'kyle@example.com', 80000, 1);  -- should succeed
 INSERT INTO employee (first_name, last_name, email, salary, dept_id)
 VALUES ('Kyle', 'Lwin', 'kyle@example.com', -5, 1);     -- should fail (negative salary)
 
+-- IMPORTING files into the tables from local device
+-- Import file1.csv into table_one (resolution, property, geographic_area)
+\copy complaint_descriptor FROM '/Users/kyawkhaungmyolwin/Downloads/complaint_descriptor.csv' WITH (FORMAT CSV, HEADER true);
+\copy resolution FROM '/Users/kyawkhaungmyolwin/Downloads/resolution.csv' WITH (FORMAT CSV, HEADER true);
+\copy geographic_area FROM '/Users/kyawkhaungmyolwin/Downloads/geographic_area.csv' WITH (FORMAT CSV, HEADER true);
+\copy sale FROM '/Users/kyawkhaungmyolwin/Downloads/sale.csv' WITH (FORMAT CSV, HEADER true);
+
