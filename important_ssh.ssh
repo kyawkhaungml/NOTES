@@ -1,1 +1,4 @@
+#GOOGLE CLOUD
 
+#IMPORTING THE FILE TO GOOGLE CLOUD VM VIA LOCAL MACHINE
+gcloud compute scp /Users/kyawkhaungmyolwin/Downloads/geographic_area.csv kl3631@cs4111-instance:~ --project=eng-plasma-475102-r9 --zone=us-east1-b
