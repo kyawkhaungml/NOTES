@@ -2,8 +2,7 @@
 CREATE TABLE NAME
 (
 	-- [COLUMN_NAME] [DATA_TYPE] [CONSTRAINTS],
-	Column1 INT NOT NULL,
-  PRIMARY KEY (Column1),
+	Column1 INT NOT NULL PRIMARY KEY,
 	Column2 DECIMAL(10,2) UNIQUE,
 	Column3 FLOAT ,
 	Column4 CHAR(10),
@@ -78,3 +77,120 @@ VALUES ('Kyle', 'Lwin', 'kyle@example.com', -5, 1);     -- should fail (negative
 \copy geographic_area FROM '/Users/kyawkhaungmyolwin/Downloads/geographic_area.csv' WITH (FORMAT CSV, HEADER true);
 \copy sale FROM '/Users/kyawkhaungmyolwin/Downloads/sale.csv' WITH (FORMAT CSV, HEADER true);
 
+-- CASE STATEMENT
+SELECT sale_id,
+       amount,
+       CASE 
+           WHEN amount < 100 THEN 'Low'
+           WHEN amount BETWEEN 100 AND 500 THEN 'Medium'
+           ELSE 'High'
+       END AS sale_category
+       FROM sale;
+
+-- JOIN Operations
+-- SELECT columns FROM table1
+-- LEFT/RIGHT/FULL/NATURAL JOIN table2 ON table1.common_column = table2.common_column;
+
+-- Create View for frequently accessed data
+CREATE VIEW active_employees AS
+SELECT emp_id, first_name, last_name, email, status
+FROM employee
+WHERE status = 'active';
+
+-- Write an example of an SQL Trigger
+CREATE OR REPLACE FUNCTION log_employee_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO employee_audit (emp_id, changed_at, old_status, new_status)
+    VALUES (NEW.emp_id, CURRENT_TIMESTAMP, OLD.status, NEW.status);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Write an example of DISTINCT usage
+SELECT DISTINCT status
+FROM employee;
+
+-- Write an example of Aggregate Function usage
+SELECT dept_id, AVG(salary) AS average_salary
+FROM employee
+GROUP BY dept_id;
+
+-- Write an example of Subquery usage
+SELECT first_name, last_name
+FROM employee
+WHERE dept_id = (
+    SELECT dept_id
+    FROM department
+    WHERE dept_name = 'Engineering'
+);
+
+-- Write an example of HAVING usage
+SELECT dept_id, COUNT(*) AS employee_count
+FROM employee
+GROUP BY dept_id
+HAVING COUNT(*) > 5;
+
+-- Write an example of Constraint usage put a value in not null salary column
+ALTER TABLE employee
+ADD CONSTRAINT chk_salary_positive
+CHECK (salary >= 0);
+
+-- Write an example of Assertion usage
+-- Note: SQL standard assertions are not widely supported in many RDBMS.
+-- However, here's a conceptual example:
+CREATE ASSERTION positive_salary_assertion
+CHECK (NOT EXISTS (
+    SELECT *
+    FROM employee
+    WHERE salary < 0
+));
+
+-- Write an example of Granting Privileges
+GRANT SELECT, INSERT, UPDATE ON employee TO hr_user;
+
+
+-- Write an example of SQL Function (no need to put $$ on the exam)
+CREATE OR REPLACE FUNCTION get_employee_full_name(emp_id INT)
+RETURNS VARCHAR AS $$
+DECLARE
+    full_name VARCHAR;
+BEGIN
+    SELECT first_name || ' ' || last_name INTO full_name
+    FROM employee
+    WHERE employee.emp_id = get_employee_full_name.emp_id;
+    RETURN full_name;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Write an example of Table Function
+CREATE OR REPLACE FUNCTION get_employees_by_department(dept INT)
+RETURNS TABLE(emp_id INT, first_name VARCHAR, last_name VARCHAR) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT emp_id, first_name, last_name
+    FROM employee
+    WHERE dept_id = dept;
+END;
+$$ LANGUAGE plpgsql;
+
+ -- Write an example of Trigger Usage
+CREATE TRIGGER trg_log_employee_update
+AFTER UPDATE OF status ON employee
+FOR EACH ROW
+EXECUTE FUNCTION log_employee_update();
+
+-- Write an example of Index Creation
+CREATE INDEX idx_employee_last_name
+ON employee(last_name);
+
+-- Write an example of Object Relational Database System (ORDS)
+-- Example: Creating a composite type and using it in a table
+CREATE TYPE address_type AS (
+    street VARCHAR(100),
+    city VARCHAR(50),
+    state VARCHAR(50),
+    zip_code VARCHAR(10)
+);
+
+CREATE TABLE address OF address_type;
